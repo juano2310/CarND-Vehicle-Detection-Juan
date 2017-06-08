@@ -41,24 +41,24 @@ The first thing I did on this notebook was to explore Color Spaces, by doing thi
 
 It was time to load the data. First I started with a small sample but finally I noticed that the results improved drastically with the larger dataset.
 
-Basically I divided into to categories, cars and notcars
+Basically, I divided the data into to categories, cars and notcars
 
 ![alt text][image3]
 
 ### 3 - scikit-image HOG
 
-Now it was time for a quick test of scikit-image HOG. Here is the result for a random car image from the data sample.
+It was time for a quick test of scikit-image HOG. Here is the result for a random car image from the data sample.
 
 ![alt text][image4]
 
 ### 4 - Combine and Normalize Features
 
-Now, with several feature extraction methods in the toolkit, I was ready to train a classifier, but first, as in any machine learning application, I needed to normalize the data. Python's sklearn package provides the StandardScaler() method to accomplish this task. Here is an example of feature extraction before and after the normilization.
+Now, with several feature extraction methods in the toolkit, I was ready to train a classifier. First, as in any machine learning application, I needed to normalize the data. Python's sklearn package provides the StandardScaler() method to accomplish this task. Here is an example of feature extraction before and after the normalization.
 
 ![alt text][image5]
 
 ### 5 - Color Classify
-First I tried training using only the color feature and thanks to notebook I was able to adjust the values to experiment with it. This was the result:
+I used this block to play with different parameters to train a model using only the color feature. It was a lot easier using this notebook to adjust values and iterate quickly. This was the result:
 
 ```
 Using spatial binning of: 10 and 32 histogram bins
@@ -71,7 +71,7 @@ For these 10 labels:  [ 0.  1.  0.  0.  0.  1.  1.  1.  1.  0.]
 ```
 
 ### 6 - HOG Classify
-Then I experimented again using only the HOG feature and this was the result:
+Then I experimented again using only the HOG features and this was the result:
 
 ```
 42.86 Seconds to extract HOG features...
@@ -85,7 +85,7 @@ For these 10 labels:  [ 0.  1.  1.  0.  1.  1.  1.  0.  1.  0.]
 ```
 
 ### 7 - Hog Sub-sampling Window Search
-This function takes in an image and performs a sliding window search on it. As a result it returns a list of bounding boxes for the search windows, which then I pass to draw draw_boxes() function.
+This function takes in an image and performs a sliding window search of the normalized combination of features on it. As a result it returns a list of bounding boxes for the search windows, which then I pass to draw draw_boxes() function.
 
 ![alt text][image6]
 
@@ -106,9 +106,9 @@ Here is an example of the output and the heatmap applied to an image:
 The final pipeline is very simple. It takes an image and it looks for cars using the previously trained SVC. Then in creates a heatmap to remove false positives and finally it draws a blue box on top of the hot window.
 
 ### 11 - Apply pipeline to project video
-This method extract each image from the video and process it through the pipeline. As a result we can see the boxes on the final video.
+This method extracts each image from the video and process it through the pipeline. As a result we can see the boxes on the final video.
 
-[video1]
+![alt text][video1]
 ---
 
 ### Discussion
