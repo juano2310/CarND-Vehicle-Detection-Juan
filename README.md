@@ -13,96 +13,108 @@ The goals / steps of this project are the following:
 * Run your pipeline on a video stream (start with the test_video.mp4 and later implement on full project_video.mp4) and create a heat map of recurring detections frame by frame to reject outliers and follow detected vehicles.
 * Estimate a bounding box for vehicles detected.
 
-Here are links to the labeled data for [vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/vehicles.zip) and [non-vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/non-vehicles.zip) examples to train your classifier.  These example images come from a combination of the [GTI vehicle image database](http://www.gti.ssr.upm.es/data/Vehicle_database.html), the [KITTI vision benchmark suite](http://www.cvlibs.net/datasets/kitti/), and examples extracted from the project video itself.   You are welcome and encouraged to take advantage of the recently released [Udacity labeled dataset](https://github.com/udacity/self-driving-car/tree/master/annotations) to augment your training data.
+Here are links to the labeled data for [vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/vehicles.zip) and [non-vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/non-vehicles.zip) examples to train your classifier.  These example images come from a combination of the [GTI vehicle image database](http://www.gti.ssr.upm.es/data/Vehicle_database.html), the [KITTI vision benchmark suite](http://www.cvlibs.net/datasets/kitti/), and examples extracted from the project video itself.
 
 [//]: # (Image References)
-[image1]: ./examples/car_not_car.png
-[image2]: ./examples/HOG_example.jpg
-[image3]: ./examples/sliding_windows.jpg
-[image4]: ./examples/sliding_window.jpg
-[image5]: ./examples/bboxes_and_heat.png
-[image6]: ./examples/labels_map.png
-[image7]: ./examples/output_bboxes.png
-[video1]: ./project_video.mp4
+[image1]: ./examples/color_spaces1.png
+[image2]: ./examples/color_spaces2.png
+[image3]: ./examples/data.png
+[image4]: ./examples/hog.png
+[image5]: ./examples/combine.png
+[image6]: ./examples/windowsearch.png
+[image7]: ./examples/findcars.png
+[image8]: ./examples/heatmap.png
+[video1]: ./project_video_result.mp4
 
-## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
-###Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
+## Implementation
 
----
-###Writeup / README
+On this writeup I will describe step by step all the pipeline used on the main IPython notebook located in `./Vehicle Detection.ipynb`.
 
-####1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  [Here](https://github.com/udacity/CarND-Vehicle-Detection/blob/master/writeup_template.md) is a template writeup for this project you can use as a guide and a starting point.  
+### 1 - Explore Color Spaces
 
-You're reading it!
-
-###Histogram of Oriented Gradients (HOG)
-
-####1. Explain how (and identify where in your code) you extracted HOG features from the training images.
-
-The code for this step is contained in the first code cell of the IPython notebook (or in lines # through # of the file called `some_file.py`).  
-
-I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
+The first thing I did on this notebook was to explore Color Spaces, by doing this it was easier to identify a color space that might be more suitable to identify cars in a picture. Saturation proved to be one characteristic that most cars shared.
 
 ![alt text][image1]
-
-I then explored different color spaces and different `skimage.hog()` parameters (`orientations`, `pixels_per_cell`, and `cells_per_block`).  I grabbed random images from each of the two classes and displayed them to get a feel for what the `skimage.hog()` output looks like.
-
-Here is an example using the `YCrCb` color space and HOG parameters of `orientations=8`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`:
-
-
 ![alt text][image2]
 
-####2. Explain how you settled on your final choice of HOG parameters.
+### 2 - Data Exploration
 
-I tried various combinations of parameters and...
+It was time to load the data. First I started with a small sample but finally I noticed that the results improved drastically with the larger dataset.
 
-####3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
-
-I trained a linear SVM using...
-
-###Sliding Window Search
-
-####1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
-
-I decided to search random window positions at random scales all over the image and came up with this (ok just kidding I didn't actually ;):
+Basically I divided into to categories, cars and notcars
 
 ![alt text][image3]
 
-####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
+### 3 - scikit-image HOG
 
-Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
+Now it was time for a quick test of scikit-image HOG. Here is the result for a random car image from the data sample.
 
 ![alt text][image4]
----
 
-### Video Implementation
+### 4 - Combine and Normalize Features
 
-####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (somewhat wobbly or unstable bounding boxes are ok as long as you are identifying the vehicles most of the time with minimal false positives.)
-Here's a [link to my video result](./project_video.mp4)
-
-
-####2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
-
-I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions.  I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle.  I constructed bounding boxes to cover the area of each blob detected.  
-
-Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
-
-### Here are six frames and their corresponding heatmaps:
+Now, with several feature extraction methods in the toolkit, I was ready to train a classifier, but first, as in any machine learning application, I needed to normalize the data. Python's sklearn package provides the StandardScaler() method to accomplish this task. Here is an example of feature extraction before and after the normilization.
 
 ![alt text][image5]
 
-### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all six frames:
+### 5 - Color Classify
+First I tried training using only the color feature and thanks to notebook I was able to adjust the values to experiment with it. This was the result:
+
+```
+Using spatial binning of: 10 and 32 histogram bins
+Feature vector length: 396
+5.28 Seconds to train SVC...
+Test Accuracy of SVC =  0.9032
+My SVC predicts:  [ 0.  0.  0.  0.  0.  1.  1.  1.  1.  0.]
+For these 10 labels:  [ 0.  1.  0.  0.  0.  1.  1.  1.  1.  0.]
+0.00114 Seconds to predict 10 labels with SVC
+```
+
+### 6 - HOG Classify
+Then I experimented again using only the HOG feature and this was the result:
+
+```
+42.86 Seconds to extract HOG features...
+Using: 9 orientations 8 pixels per cell and 2 cells per block
+Feature vector length: 5292
+10.62 Seconds to train SVC...
+Test Accuracy of SVC =  0.9764
+My SVC predicts:  [ 0.  1.  1.  0.  1.  1.  1.  0.  1.  0.]
+For these 10 labels:  [ 0.  1.  1.  0.  1.  1.  1.  0.  1.  0.]
+0.00131 Seconds to predict 10 labels with SVC
+```
+
+### 7 - Hog Sub-sampling Window Search
+This function takes in an image and performs a sliding window search on it. As a result it returns a list of bounding boxes for the search windows, which then I pass to draw draw_boxes() function.
+
 ![alt text][image6]
 
-### Here the resulting bounding boxes are drawn onto the last frame in the series:
+### 8 - Find cars
+Now that we have the sliding window search on an image running and a trained classifier  it is time to combine both steps and search for cars!
+The key here is the Multi-scale Windows. This allows to search vehicles of any size across the image.
+
 ![alt text][image7]
 
+### 9 - Plot heatmap
+The idea is to identify Multiple Detections & False Positives.
+If the classifier is working well, then the "hot" parts of the map are where the cars are, and by imposing a threshold, you can reject areas affected by false positives.
+Here is an example of the output and the heatmap applied to an image:
 
+![alt text][image8]
 
+### 10 - Final Pipeline
+The final pipeline is very simple. It takes an image and it looks for cars using the previously trained SVC. Then in creates a heatmap to remove false positives and finally it draws a blue box on top of the hot window.
+
+### 11 - Apply pipeline to project video
+This method extract each image from the video and process it through the pipeline. As a result we can see the boxes on the final video.
+
+[video1]
 ---
 
-###Discussion
+### Discussion
 
-####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
+For this project, I used a step by step approach which helped me understand each part of the pipeline. This was very helpful when things didn't go exactly as expected. Debugging was a lot easier and concepts became clearer. At the end I put together a pipeline by simply calling the functions I implemented along the way.
+I noticed there was a huge difference when I used the larger dataset.
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+Ideas to improve this project:
+* Average the detected boxes by apply the heatmap on more than one frame instead of each individual image.
