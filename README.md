@@ -24,7 +24,7 @@ Here are links to the labeled data for [vehicle](https://s3.amazonaws.com/udacit
 [image6]: ./examples/windowsearch.png
 [image7]: ./examples/findcars.png
 [image8]: ./examples/heatmap.png
-[video1]: ./project_video_result.mp4 "Final Video Result"
+[Final Video Result]: ./project_video_result.mp4
 
 ## Implementation
 
@@ -108,7 +108,7 @@ The final pipeline is very simple. It takes an image and it looks for cars using
 ### 11 - Apply pipeline to project video
 This method extracts each image from the video and process it through the pipeline. As a result we can see the boxes on the final video.
 
-![alt text][video1]
+[Final Video Result]
 ---
 
 ### Discussion
