@@ -24,7 +24,7 @@ Here are links to the labeled data for [vehicle](https://s3.amazonaws.com/udacit
 [image6]: ./examples/windowsearch.png
 [image7]: ./examples/findcars.png
 [image8]: ./examples/heatmap.png
-[video1]: ./project_video_result.mp4
+[video1]: ./project_video_result.mp4 "Final Video Result"
 
 ## Implementation
 
