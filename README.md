@@ -103,7 +103,7 @@ Here is an example of the output and the heatmap applied to an image:
 ![alt text][image8]
 
 ### 10 - Final Pipeline
-The final pipeline is very simple. It takes an image and it looks for cars using the previously trained SVC. Then in creates a heatmap to remove false positives and finally it draws a blue box on top of the hot window.
+The final pipeline is very simple. It takes an image and it looks for cars using the previously trained SVC. Then in creates a heatmap to remove false positives and it adds it to a collection which I use to average the detections. This prevents the square from jumping from frame to frame or from having an frame without a square at all. Finally it draws a blue box on top of the hot window.
 
 ### 11 - Apply pipeline to project video
 This method extracts each image from the video and process it through the pipeline. As a result we can see the boxes on the final video.
